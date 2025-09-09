@@ -1,0 +1,24 @@
+{
+  "name": "deeporigin-api_automation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carlosalmeida8908/deeporigin-api_automation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/carlosalmeida8908/deeporigin-api_automation/issues"
+  },
+  "homepage": "https://github.com/carlosalmeida8908/deeporigin-api_automation#readme",
+  "devDependencies": {
+    "cypress": "^15.1.0"
+  }
+}
