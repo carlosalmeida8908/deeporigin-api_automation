@@ -1,6 +1,6 @@
 # deeporigin-api_automation
 
-DummyJSON Products — API Automation (Cypress + TypeScript)
+API Automation (Cypress + TypeScript)
 API regression tests for the DummyJSON Products endpoints (and auth).
 Stack: Cypress 13, TypeScript 5, Zod (runtime schema validation).
 
@@ -24,8 +24,6 @@ cd deeporigin-api_automation
 
 # install dependencies
 npm ci  # or: npm install
-
-Run Cypress:
 
 # interactive runner
 npx cypress open     # then pick E2E → browser → run the spec
