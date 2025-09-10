@@ -33,3 +33,14 @@ npx cypress open     # then pick E2E → browser → run the spec
 # headless
 npx cypress run
 
+
+# How to Run CI script
+
+npm run cy:run:ci
+
+
+# After the run, merge and generate the Mochawesome HTML Locally:
+
+npx mochawesome-merge reports/mochawesome/*.json > reports/mochawesome/merged.json
+npx marge reports/mochawesome/merged.json --reportDir reports/mochawesome --inline
+open reports/mochawesome/merged.html   # macOS

@@ -6,7 +6,11 @@
   "scripts": {
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "cy:run:ci": "cypress run --reporter mocha-multi-reporters --reporter-options configFile=reporter-config.json"
+    "cy:run:ci": "cypress run --reporter mocha-multi-reporters --reporter-options configFile=reporter-config.json",
+    "report:merge": "mochawesome-merge reports/mochawesome/*.json > reports/mochawesome/merged.json",
+    "report:html": "marge reports/mochawesome/merged.json --reportDir reports/mochawesome --reportTitle \"Cypress API Tests\" --inline",
+    "report:open": "node -e \"const {execSync}=require('child_process');const p='reports/mochawesome/merged.html';try{if(process.platform==='darwin')execSync('open '+p);else if(process.platform==='win32')execSync('start '+p,{stdio:'ignore'});else execSync('xdg-open '+p);}catch(e){console.log('Open manually:',p);}\"",
+    "cy:run:ci:report": "bash -c 'npx cypress run --reporter mocha-multi-reporters --reporter-options configFile=reporter-config.json; code=$?; npx mochawesome-merge reports/mochawesome/*.json > reports/mochawesome/merged.json || true; npx marge reports/mochawesome/merged.json --reportDir reports/mochawesome --reportTitle \"Cypress API Tests\" --inline || true; exit $code'"
   },
   "repository": {
     "type": "git",
