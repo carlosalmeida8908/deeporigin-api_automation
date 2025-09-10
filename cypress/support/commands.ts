@@ -1,6 +1,5 @@
 /// <reference types="cypress" />
 
-// Make this file a module so TS picks up the global augmentation
 export {}
 
 // --------- Types for our helper ----------
@@ -17,15 +16,15 @@ export type ApiOptions = {
 declare global {
   namespace Cypress {
     interface Chainable {
-      /** Logs in, stores token in Cypress.env('accessToken'), and returns it */
+      /** Logs in, stores token in Cypress.env('accessToken'), and returns it  Carlos Almeida */
       apiLogin(): Chainable<string>
-      /** cy.request with Authorization header auto-injected (if token exists) */
+      /** cy.request with Authorization header auto-injected (if token exists) Carlos Almeida*/
       api(options: ApiOptions): Chainable<Cypress.Response<any>>
     }
   }
 }
 
-// --------- Implementations ----------
+// --------- Implementations ----------  Carlos Almeida
 Cypress.Commands.add('apiLogin', () => {
   return cy
     .request('POST', 'https://dummyjson.com/auth/login', {

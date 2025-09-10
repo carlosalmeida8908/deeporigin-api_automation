@@ -5,7 +5,7 @@ describe('Products: API Regression tests', () => {
   const category = 'smartphones'
 
   before(() => {
-    cy.apiLogin() // stores token in Cypress.env('accessToken')
+    cy.apiLogin() // stores token in Cypress.env('accessToken')  Carlos Almeida
   })
 
   it('GET /auth/me with token works', () => {
@@ -50,24 +50,46 @@ describe('Products: API Regression tests', () => {
     })
   })
 
-  it('GET /products/categories → array of categories (includes smartphones)', () => {
-    cy.api({ url: '/products/categories' }).then(({ body, status }) => {
-      expect(status).to.eq(200)
-      const parsed = CategoriesSchema.safeParse(body)
-      expect(parsed.success, JSON.stringify(parsed.error?.issues, null, 2)).to.be.true
-      const slugs = parsed.data.map((c: any) => (typeof c === 'string' ? c : c.slug))
-      expect(slugs).to.include('smartphones')
-    })
-  })
+  /*Call /products/categories
+  Normalize categories to slugs
+  For each slug, call /products/category/{slug} and validate the list schema and that every product’s category equals the slug*/
+it('Covers ALL categories: each /products/category/{slug} returns products with matching category', () => {
+  cy.api({ url: '/products/categories' }).then(({ status, body }) => {
+    expect(status).to.eq(200)
 
-  it('GET /products/category/{category} → all items have matching category', () => {
-    cy.api({ url: `/products/category/${category}` }).then((res) => {
-      expect(res.status).to.eq(200)
-      const parsed = ProductListSchema.safeParse(res.body)
-      expect(parsed.success).to.be.true
-      parsed.data.products.forEach((p) => expect(p.category).to.eq(category))
+    // Validate categories payload (supports string[] OR {slug,name,url}[])
+    const parsed = CategoriesSchema.safeParse(body)
+    if (!parsed.success) {
+      throw new Error(`Invalid categories:\n${JSON.stringify(parsed.error.issues, null, 2)}`)
+    }
+
+    // Normalize to slugs
+    const slugs = parsed.data.map((c: any) => (typeof c === 'string' ? c : c.slug))
+
+    // Sanity check: one known slug
+    expect(slugs).to.include('smartphones')
+
+    // Iterate serially over all categories
+    cy.wrap(slugs).each((slug: string) => {
+      cy.log(`Validating category: ${slug}`)
+      cy.api({ url: `/products/category/${slug}` }).then(({ status, body }) => {
+        expect(status).to.eq(200)
+
+        const list = ProductListSchema.safeParse(body)
+        expect(list.success, JSON.stringify(list.error?.issues, null, 2)).to.be.true
+
+        // Optional: ensure we got an array back
+        expect(list.data.products, `products for ${slug}`).to.be.an('array')
+
+        // Every product must match the category slug
+        list.data.products.forEach((p) => {
+          expect(p.category, `product ${p.id} category`).to.eq(slug)
+        })
+      })
     })
   })
+})
+
 
   it('GET /products with limit/skip/select → respects paging and field selection', () => {
     const limit = 5

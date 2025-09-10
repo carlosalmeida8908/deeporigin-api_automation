@@ -1,0 +1,69 @@
+#Draft by  Carlos Almeida
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  cypress:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run Cypress (headless) with reporters
+        uses: cypress-io/github-action@v6
+        with:
+          command: npm run cy:run:ci
+          browser: chrome
+
+      # Merge all mochawesome JSONs into a single HTML report
+      - name: Merge & generate Mochawesome report
+        if: always()
+        run: |
+          npx mochawesome-merge reports/mochawesome/*.json > reports/mochawesome/merged.json
+          npx marge reports/mochawesome/merged.json \
+            --reportDir reports/mochawesome \
+            --reportTitle "Cypress API Tests" \
+            --inline
+
+      - name: Upload JUnit XML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-xml
+          path: reports/junit/*.xml
+          if-no-files-found: ignore
+
+      - name: Upload Mochawesome HTML/JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mochawesome
+          path: |
+            reports/mochawesome/*.html
+            reports/mochawesome/*.json
+          if-no-files-found: ignore
+
+      - name: Upload screenshots/videos (on fail)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-artifacts
+          path: |
+            cypress/screenshots/**
+            cypress/videos/**
+          if-no-files-found: ignore

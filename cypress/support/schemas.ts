@@ -22,7 +22,6 @@ export const ProductListSchema = z.object({
 })
 
 
-
 export const CategorySchema = z.union([
   z.string(),
   z.object({ slug: z.string(), name: z.string() }).passthrough()

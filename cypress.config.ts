@@ -2,7 +2,7 @@ import { defineConfig } from 'cypress'
 
 export default defineConfig({
   e2e: {
-    baseUrl: 'https://dummyjson.com',   // change per project as needed
+    baseUrl: 'https://dummyjson.com',
     specPattern: 'cypress/e2e/**/*.cy.ts',
     defaultCommandTimeout: 8000,
     requestTimeout: 15000,
